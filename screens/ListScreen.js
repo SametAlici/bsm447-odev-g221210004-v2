@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, TextInput, View } from 'react-native'; // YENİ: TextInput
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 const API_URL = 'https://pokeapi.co/api/v2/type/water';
 
-export default function ListScreen() {
+export default function ListScreen({ navigation }) {
   const [pokemonlar, setPokemonlar] = useState([]);
   const [yukleniyor, setYukleniyor] = useState(true);
   const [hata, setHata] = useState(null);
-  const [arama, setArama] = useState(''); 
+  const [arama, setArama] = useState('');
 
   useEffect(() => {
     fetch(API_URL)
@@ -25,7 +25,6 @@ export default function ListScreen() {
       .finally(() => setYukleniyor(false));
   }, []);
 
-  // YENİ: arama metnine göre filtrelenmiş liste
   const filtrelenmis = pokemonlar.filter((p) =>
     p.name.toLowerCase().includes(arama.trim().toLowerCase())
   );
@@ -60,9 +59,12 @@ export default function ListScreen() {
         data={filtrelenmis}
         keyExtractor={(item) => item.name}
         renderItem={({ item }) => (
-          <View style={styles.satir}>
+          <Pressable
+            style={styles.satir}
+            onPress={() => navigation.navigate('Detay', { pokemon: item })}
+          >
             <Text style={styles.isim}>{item.name}</Text>
-          </View>
+          </Pressable>
         )}
         ListEmptyComponent={<Text style={styles.bos}>Sonuç bulunamadı.</Text>}
       />
@@ -71,7 +73,7 @@ export default function ListScreen() {
 }
 
 const styles = StyleSheet.create({
-  kapsayici: { 
+  kapsayici: {
     flex: 1,
   },
   merkez: {
@@ -79,7 +81,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  arama: { 
+  arama: {
     margin: 12,
     padding: 10,
     borderWidth: 1,
@@ -96,7 +98,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textTransform: 'capitalize',
   },
-  bos: { 
+  bos: {
     textAlign: 'center',
     marginTop: 24,
     color: '#888',
