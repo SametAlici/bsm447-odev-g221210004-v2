@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const MAX_STAT = 150;
+const STORAGE_KEY = 'kaydedilenler';
 
 export default function DetailScreen({ route }) {
   const { pokemon } = route.params;
@@ -9,6 +11,7 @@ export default function DetailScreen({ route }) {
   const [detay, setDetay] = useState(null);
   const [yukleniyor, setYukleniyor] = useState(true);
   const [hata, setHata] = useState(null);
+  const [kayitli, setKayitli] = useState(false);
 
   useEffect(() => {
     fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon.name}`)
@@ -22,6 +25,28 @@ export default function DetailScreen({ route }) {
       .catch(() => setHata('Detay alınamadı. İnternet bağlantını kontrol et.'))
       .finally(() => setYukleniyor(false));
   }, [pokemon.name]);
+
+  useEffect(() => {
+    AsyncStorage.getItem(STORAGE_KEY).then((deger) => {
+      const liste = deger ? JSON.parse(deger) : [];
+      setKayitli(liste.some((p) => p.name === pokemon.name));
+    });
+  }, [pokemon.name]);
+
+  async function kaydetVeyaCikar() {
+    const deger = await AsyncStorage.getItem(STORAGE_KEY);
+    const liste = deger ? JSON.parse(deger) : [];
+
+    let yeniListe;
+    if (kayitli) {
+      yeniListe = liste.filter((p) => p.name !== pokemon.name);
+    } else {
+      yeniListe = [...liste, pokemon];
+    }
+
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(yeniListe));
+    setKayitli(!kayitli);
+  }
 
   if (yukleniyor) {
     return (
@@ -49,12 +74,21 @@ export default function DetailScreen({ route }) {
 
       <Text style={styles.isim}>{pokemon.name}</Text>
 
+      <Pressable
+        style={[styles.buton, kayitli && styles.butonCikar]}
+        onPress={kaydetVeyaCikar}
+      >
+        <Text style={styles.butonYazi}>
+          {kayitli ? 'Kaydedilenlerden çıkar' : 'Kaydet'}
+        </Text>
+      </Pressable>
+
       <View style={styles.bilgiSatiri}>
         <Text style={styles.bilgi}>Boy: {detay.height / 10} m</Text>
         <Text style={styles.bilgi}>Kilo: {detay.weight / 10} kg</Text>
       </View>
 
-            <Text style={styles.baslik}>İstatistikler</Text>
+      <Text style={styles.baslik}>İstatistikler</Text>
 
       {detay.stats.map((s) => {
         const oran = Math.min(s.base_stat, MAX_STAT) / MAX_STAT;
@@ -69,7 +103,6 @@ export default function DetailScreen({ route }) {
           </View>
         );
       })}
-
     </ScrollView>
   );
 }
@@ -93,6 +126,21 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textTransform: 'capitalize',
     marginBottom: 12,
+  },
+  buton: {
+    backgroundColor: '#3b82f6',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+  butonCikar: {
+    backgroundColor: '#ef4444',
+  },
+  butonYazi: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   bilgiSatiri: {
     flexDirection: 'row',
