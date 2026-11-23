@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "mobile_odev",
-    "slug": "mobile_odev",
+    "name": "Su Pokédex",
+    "slug": "su-pokedex",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -10,11 +10,10 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.sametalici.supokedex",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "backgroundColor": "#DBEAFE",
+        "foregroundImage": "./assets/android-icon-foreground.png"
       }
     },
     "web": {
