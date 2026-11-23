@@ -4,19 +4,31 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import ListScreen from './screens/ListScreen';
 import SavedScreen from './screens/SavedScreen';
 import DetailScreen from './screens/DetailScreen';
+import { Ionicons } from '@expo/vector-icons';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function Sekmeler() {
   return (
-    <Tab.Navigator>
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+          let ikon;
+          if (route.name === 'Liste') {
+            ikon = focused ? 'water' : 'water-outline';
+          } else {
+            ikon = focused ? 'bookmark' : 'bookmark-outline';
+          }
+          return <Ionicons name={ikon} size={size} color={color} />;
+        },
+      })}
+    >
       <Tab.Screen name="Liste" component={ListScreen} options={{ title: 'Su Pokémonları' }} />
       <Tab.Screen name="Kaydedilenler" component={SavedScreen} />
     </Tab.Navigator>
   );
 }
-
 export default function App() {
   return (
     <NavigationContainer>
