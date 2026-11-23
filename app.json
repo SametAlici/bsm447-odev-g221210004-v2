@@ -9,10 +9,10 @@
     "ios": {
       "supportsTablet": true
     },
-    "android": {
+     "android": {
       "package": "com.sametalici.supokedex",
       "adaptiveIcon": {
-        "backgroundColor": "#DBEAFE",
+        "backgroundColor": "#2563EB",
         "foregroundImage": "./assets/android-icon-foreground.png"
       }
     },
